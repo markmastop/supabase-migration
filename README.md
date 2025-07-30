@@ -1,6 +1,6 @@
 # 🚀 Supabase Cloud to Local Migration Tool
 
-A powerful Python utility designed to simplify and streamline the process of migrating data between Supabase instances. This tool provides an interactive interface for managing your database migrations with confidence.
+A Python utility designed to simplify and streamline the process of migrating data between Supabase instances. This solution provides an interactive interface for managing your database migrations.
 
 ![Migration Workflow](https://img.shields.io/badge/Status-Production-brightgreen) ![Python Version](https://img.shields.io/badge/Python-3.7%2B-blue) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -58,6 +58,17 @@ A powerful Python utility designed to simplify and streamline the process of mig
    
    > ⚠️ **Security Note**: Never commit your `.env` file or expose your service role keys in version control.
 
+4. **Install list_tables function**:
+   ```create or replace function list_tables()
+returns table(table_name text)
+language sql
+as $$
+  select table_name from information_schema.tables
+  where table_schema = 'public' and table_type = 'BASE TABLE';
+$$;
+   ```
+
+
 ## 🚀 Usage
 
 ### Starting the Tool
@@ -65,7 +76,7 @@ A powerful Python utility designed to simplify and streamline the process of mig
 Run the migration tool with:
 
 ```bash
-python migrate_cloud_to_local.py
+python3 migrate_cloud_to_local.py
 ```
 
 ### Main Menu
@@ -121,7 +132,7 @@ Choose an option (1-5):
 |----------|-------------|---------|
 | `SUPABASE_CLOUD_URL` | Your cloud Supabase project URL | Required |
 | `SUPABASE_CLOUD_KEY` | Cloud service role key | Required |
-| `SUPABASE_LOCAL_URL` | Local Supabase URL | `http://localhost:54321` |
+| `SUPABASE_LOCAL_URL` | Local Supabase URL | `http://localhost:5432` |
 | `SUPABASE_LOCAL_KEY` | Local service role key | Required |
 
 ### Script Configuration
@@ -188,109 +199,3 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- [Supabase](https://supabase.com/) for their amazing open-source platform
-- [Python Supabase Client](https://github.com/supabase-community/supabase-py) for the Python client library
-
-## Usage
-
-1. Run the migration script:
-   ```bash
-   python migrate_cloud_to_local.py
-   ```
-
-2. You'll see an interactive menu with the following options:
-   - **Show cloud tables**: View all tables in your cloud Supabase instance with row counts
-   - **Show local tables**: View all tables in your local Supabase instance with row counts
-   - **Compare cloud and local**: See a side-by-side comparison of both instances
-   - **Migrate data**: Start the migration process
-   - **Exit**: Quit the application
-
-3. The migration process will:
-   - Show you the list of tables that will be migrated
-   - Ask for confirmation before proceeding
-   - Display detailed progress for each table
-   - Show success/error messages for each operation
-
-### Interactive Menu Options
-
-1. **Show cloud tables**
-   - Displays all tables in your cloud Supabase instance
-   - Shows row count for each table
-   - Helps verify connection to your cloud instance
-
-2. **Show local tables**
-   - Displays all tables in your local Supabase instance
-   - Shows row count for each table
-   - Helps verify connection to your local instance
-
-3. **Compare cloud and local**
-   - Shows a side-by-side comparison of both instances
-   - Highlights tables that exist in only one instance
-   - Shows row count differences for tables in both instances
-   - Indicates synchronization status with icons (✅ In sync, ⚠️ Different, ❌ Missing)
-
-4. **Migrate data**
-   - Shows list of tables to be migrated
-   - Asks for confirmation before starting
-   - Displays progress for each table
-   - Shows success/error messages
-   - Refreshes local table list after migration
-
-### Advanced Configuration
-
-You can customize the migration behavior by modifying these settings in the script:
-
-- `EXCLUDE_PATTERNS`: Regular expressions to exclude specific tables (e.g., system tables)
-- `INCLUDE_SCHEMAS`: List of database schemas to include (default: ['public'])
-
-### Keyboard Shortcuts
-
-- `Ctrl+C` - Cancel the current operation and return to the main menu
-- `q` - When in table view, return to the main menu
-
-## Example Output
-
-```
-🚀 Starting Supabase migration from cloud to local
-==============================================
-
-🔄 Migrating table: users
-- Copied 1000 records (total: 1000)
-- Copied 500 records (total: 1500)
-✅ Completed users: 1500 records migrated
-
-🔄 Migrating table: products
-- Copied 42 records (total: 42)
-✅ Completed products: 42 records migrated
-
-🏁 Migration completed successfully!
-```
-
-## Error Handling
-
-The script includes comprehensive error handling:
-- Connection errors to Supabase instances
-- Individual row insertion errors (logs error but continues)
-- Rate limiting protection with delays between requests
-
-## Best Practices
-
-1. **Backup your data** before running migrations
-2. Review the list of discovered tables before confirming the migration
-3. Run migrations during off-peak hours for production databases
-4. Monitor the migration progress and check logs for any errors
-5. Use the `EXCLUDE_PATTERNS` to skip system or large tables during initial testing
-6. Consider using a VPN or IP allowlisting if your Supabase project has network restrictions
-
-## Troubleshooting
-
-- **Connection Issues**: Verify your Supabase URLs and API keys
-- **Permission Errors**: Ensure your service role key has proper permissions
-- **Rate Limiting**: If you encounter rate limits, increase the sleep duration in the script
-
-## License
-
-MIT
